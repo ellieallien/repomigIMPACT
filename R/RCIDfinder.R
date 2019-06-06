@@ -1,21 +1,24 @@
 #this is the initial package for the IMPACT repository migration
-#this is my first ever function file!
+#this is my first ever function file! Yeee :)
 #this file contains functions useful to extract info on the RCID based on the excel metedata sheet extracted from the resource centre
 
 #' function to split the legacy data Date column (yyyy-mm) in two columns containing year and month, to be added to the df
-#' @return a new data frame, copying over the input one and adding the new columns
-#' @export
+#'@param df_rc the dataframe containing the date column
+#'@param date_col the name of the column containing the date (as a string). Defaults to "Date"
+#'@return a new data frame, copying over the input one and adding the new columns
+#'@export
 #create a new column that records just the beginning of the date info -- the year -- inspired by: https://stackoverflow.com/questions/4350440/split-data-frame-string-column-into-multiple-columns
-extract_year <- function(df_rc){
-
+extract_year <- function(df_rc,
+                         date_col = "Date"){
   new_col_names <- c("Year", "Month")
-  new_cols <- reshape2::colsplit(df_rc$Date, "-", new_col_names)
+  new_cols <- reshape2::colsplit(df_rc[[date_col]], "-", new_col_names)
   new_df_rc <- cbind(df_rc, new_cols)
   return(new_df_rc)
 }
 
 
-#' function identifying whether a cycle belongs to the RCID era, or predates it, and needs therefore to be classified on the year-based RCID
+#' function identifying whether a cycle was before 2018
+#' @param df the dataframe containing the date column, after being passed through the extract_year function
 #' @return the input data frame after manipulation
 #' @export
 #try to use the function suggested here: https://stackoverflow.com/questions/43531737/in-r-how-to-perform-an-operation-on-a-specific-subset-of-a-data-frame to identify the row index for a specific year
@@ -62,17 +65,11 @@ build_rcid <- function(df_leg, df_rcid){
   #now, in the new df legacy in cui poi alla fine rimuovero le colonne inutili che ho aggiunto io, metto le info nelle caselle rilevanti
   #problema del factor se non uso as character, vedi: https://stackoverflow.com/questions/11949613/assigning-a-column-value-from-one-data-frame-to-another-in-r
 
-
-
-
   country_rcid <- as.character(df_rcid$Country)
-  country_leg <- as.character(df_leg$Country)
+  country_leg <- as.character(df_leg$Country %>% unique)
   bool_cond <- grepl(country_rcid, country_leg) & (df_leg$Year < 2018) & grepl(df_rcid$Year, df_leg$Year)
 
   df_leg$RC.ID <- ifelse(bool_cond, as.character(df_rcid$Research.Cycle.ID[which(bool_cond)]), "")
-
-
-
 
   df_list <- list(df_leg, df_rcid)
   return(df_list)

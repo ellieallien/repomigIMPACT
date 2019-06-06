@@ -5,17 +5,17 @@ library(dplyr)
 #create a data frame from the initial excel files, transformed in csvs
 #one for the res centre info
 df_rc <- read.csv2("data/legacy_data_chad.csv")
-df_rc
+df_rc %>% head
 #one for the RCID info
 df_rcid <- read.csv2("data/chad_repository.csv")
-df_rcid
+df_rcid %>% head
 
 #TEMPORARY: discussed with Anna we might want it as an extra column in the legacy file - one new column is filled with NAs: https://lembra.wordpress.com/2010/03/12/adding-new-column-to-a-data-frame-in-r/
 df_rcid["Ongoing.Past"] <- NA
 df_rcid
 
 #create a new column that records just the beginning of the date info -- the year -- inspired by: https://stackoverflow.com/questions/4350440/split-data-frame-string-column-into-multiple-columns
-new_df_rc <- extract_year(df_rc)
+new_df_rc <- extract_year(df_rc, date_col = "Date")
 new_df_rc
 
 #understand if the cycle predates the RCID system -- build an extra column with old or new specified
