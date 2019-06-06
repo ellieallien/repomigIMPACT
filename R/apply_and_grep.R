@@ -13,19 +13,24 @@ compare.linkage(v1, trunc_rcid, blockfld = c(6))$pairs
 epiWeights(compare.linkage(v1, trunc_rcid, blockfld = c(6)))
 
 
-### OR GREP
-
-f1 <- function(v){
+### Functions to get the most likely or the three most likely
+most_likely_RCID <- function(v){
 result <- mapply(grep, pattern = v, x = trunc_rcid) %>% unlist %>% as.vector
 ind <- getmode(result)
 trunc_rcid$Research.Cycle.ID[ind]
 }
 
-apply(trunc_legacy, 1, f1)
-
-getmode <- function(v) {
-  uniqv <- unique(v)
-  uniqv[which.max(tabulate(match(v, uniqv)))]
+most_likely_RCIDs <- function(v){
+  result <- mapply(grep, pattern = v, x = trunc_rcid) %>% unlist %>% as.vector
+  ind <- get_top_3(result) %>% as.numeric
+  trunc_rcid$Research.Cycle.ID[ind]
 }
 
-### Apply thid to
+
+
+### Functions that execute returning the most likely RCID or RCIDs
+apply(trunc_legacy, 1, most_likely_RCID)
+apply(trunc_legacy, 1, most_likely_RCIDs)
+
+
+

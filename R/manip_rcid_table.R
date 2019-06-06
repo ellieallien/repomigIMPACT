@@ -41,3 +41,19 @@ map_cycle_year <- function(df){
   df <- mutate(df, Year = (as.integer(as.integer(RC.Number)/100))+2000)
   return(df)
 }
+
+
+#' Get the mode of a vector (somehow now a base function in R !!!!!)
+#' @param vector of things
+#' @return the unique mode
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))] %>% return
+}
+
+#' Get the mode of a vector (somehow now a base function in R !!!!!)
+#' @param vector of things
+#' @return the top three most frequent values in the vector
+get_top_3 <- function(v){
+  names(sort(-table(v)))[c(1:3)] %>% return
+}
